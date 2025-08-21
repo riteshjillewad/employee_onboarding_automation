@@ -1,8 +1,15 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 import os
 from utils.db import test_connection
 from routes.onboarding import onboarding_bp
+import logging
+
+
+# Configure logging
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 
 # Load environment variables from the .env file
 load_dotenv()

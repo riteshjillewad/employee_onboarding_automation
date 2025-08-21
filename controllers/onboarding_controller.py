@@ -1,9 +1,13 @@
 from models.employee import Employee
 from datetime import timedelta
 from utils.db import get_db
-from services.mail_service import send_welcome_mail, send_contract_mail # This is new
+from services.mail_service import send_welcome_mail, send_contract_mail
+from flask import jsonify # Added here
+from utils.log_utility import log_api_request, log_api_response # Make sure you have this import
 
-def handle_onboarding_webhook(data):
+def handle_onboarding_webhook(request, data): # The function signature is updated to accept the request object
+    log_api_request(request) # Log incoming request
+
     try:
         # 1. Validate the incoming data with the Employee schema
         employee_data = Employee(**data)
@@ -30,6 +34,10 @@ def handle_onboarding_webhook(data):
             send_welcome_mail(employee_email=employee_data.email, name=employee_data.name)
             send_contract_mail(employee_email=employee_data.email, name=employee_data.name, end_date=employee_data.end_date)
 
-        return {"status": "success", "message": "Data validated and processed", "employee": employee_data.model_dump()}, 200
+        response_data = {"status": "success", "message": "Data validated and processed", "employee": employee_data.model_dump()}
+        log_api_response(response_data, 200) # Log success response
+        return jsonify(response_data), 200
     except Exception as e:
-        return {"status": "error", "message": str(e)}, 400
+        error_data = {"status": "error", "message": str(e)}
+        log_api_response(error_data, 400) # Log error response
+        return jsonify(error_data), 400
