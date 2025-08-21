@@ -18,6 +18,15 @@ app.register_blueprint(onboarding_bp, url_prefix='/api')
 def home():
     return "Employee Onboarding Automation Backend is running!"
 
+# Custom Error Handlers
+@app.errorhandler(404)
+def page_not_found(e):
+    return {"status": "error", "message": "The requested URL was not found."}, 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return {"status": "error", "message": "An unexpected error occurred. Please try again later."}, 500
+
 if __name__ == '__main__':
     # Test the database connection
     test_connection()
